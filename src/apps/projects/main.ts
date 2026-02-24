@@ -59,7 +59,6 @@ projects.get('/get', async (c) => {
     }, token);
 
     if (!Array.isArray(projectsResult)) {
-
         return c.json({ error: 'Failed to retrieve projects', details: projectsResult }, 500);
     }
 
