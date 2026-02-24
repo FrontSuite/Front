@@ -50,7 +50,7 @@
             } else {
                 console.warn('Session refresh failed:', data.error);
                 // Optional: Redirect to login if the refresh token is invalid
-                window.location.href = '/login';
+                window.location.href = '/app/login';
             }
         } catch (error) {
             console.error('Error refreshing session:', error);
@@ -75,4 +75,7 @@
     } else {
         initAuthRefresh();
     }
+
+    window.refreshSession = refreshSession;
+    window.isTokenExpired = isTokenExpired;
 })();
