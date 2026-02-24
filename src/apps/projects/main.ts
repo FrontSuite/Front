@@ -22,9 +22,10 @@ projects.put('/create', async (c) => {
         return c.json({ error: authError?.message || 'User not found or invalid token' }, 404);
     }
     const userUUID = user.id;
-    const result = await util.create(userUUID, body.projectName, body.projectRepo || '');
+    const result = await util.create(userUUID, body.projectName, body.projectRepo || '', token);
 
     if (!Array.isArray(result)) {
+
         return c.json({ error: 'Failed to create project', details: result }, 500);
     }
 
@@ -55,9 +56,10 @@ projects.get('/get', async (c) => {
         name: projectName || null,
         repo: projectRepo || null,
         id: projectUUID || null
-    });
+    }, token);
 
     if (!Array.isArray(projectsResult)) {
+
         return c.json({ error: 'Failed to retrieve projects', details: projectsResult }, 500);
     }
 
@@ -80,7 +82,7 @@ projects.patch('/edit', async (c) => {
     const userUUID = user.id;
 
     const body = await c.req.json();
-    const projectResult = await util.get({ owner: userUUID, id: body.projectUUID });
+    const projectResult = await util.get({ owner: userUUID, id: body.projectUUID }, token);
     if (!Array.isArray(projectResult)) {
         return c.json({ error: 'Failed to retrieve project', details: projectResult }, 500);
     }
@@ -88,9 +90,10 @@ projects.patch('/edit', async (c) => {
         return c.json({ error: 'Project not found or you are not the owner' }, 404);
     }
 
-    const result = await util.edit(body.projectUUID, body.projectName, body.projectRepo);
+    const result = await util.edit(body.projectUUID, body.projectName, body.projectRepo, token);
 
     if (!Array.isArray(result)) {
+
         return c.json({ error: 'Failed to edit project', details: result }, 500);
     }
 
@@ -118,7 +121,7 @@ projects.delete('/delete', async (c) => {
     }
 
     // Check ownership before deleting
-    const projectResult = await util.get({ owner: userUUID, id: projectUUID });
+    const projectResult = await util.get({ owner: userUUID, id: projectUUID }, token);
     if (!Array.isArray(projectResult)) {
         return c.json({ error: 'Failed to retrieve project', details: projectResult }, 500);
     }
@@ -126,7 +129,8 @@ projects.delete('/delete', async (c) => {
         return c.json({ error: 'Project not found or you are not the owner' }, 404);
     }
 
-    const result = await util.delete(projectUUID);
+    const result = await util.delete(projectUUID, token);
+
     if (!Array.isArray(result)) {
         return c.json({ error: 'Failed to delete project', details: result }, 500);
     }
