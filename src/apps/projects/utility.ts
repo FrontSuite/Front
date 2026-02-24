@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "../../utility/supabase.ts";
+import { getSupabaseClient, getAuthenticatedSupabaseClient } from "../../utility/supabase.ts";
 import { PostgrestError } from "@supabase/supabase-js";
 
 type URL = string;
@@ -25,9 +25,10 @@ const sb = getSupabaseClient();
 */
 
 // Get all projects from a user
-async function get(searchCriteria: ProjectSearchCriteria): Promise<Project[] | PostgrestError> {
+async function get(searchCriteria: ProjectSearchCriteria, token?: string): Promise<Project[] | PostgrestError> {
+    const client = token ? getAuthenticatedSupabaseClient(token) : sb;
     // Get all projects by a specific user
-    let query = sb.from('projects').select<`*`, Project>('*');
+    let query = client.from('projects').select<`*`, Project>('*');
 
     query = query.eq('owner', searchCriteria.owner);
     if (searchCriteria.name) {
@@ -51,9 +52,10 @@ async function get(searchCriteria: ProjectSearchCriteria): Promise<Project[] | P
 }
 
 // Create a new project
-async function create(userUUID: string, projectName: string, projectRepo: URL): Promise<Project[] | PostgrestError> {
+async function create(userUUID: string, projectName: string, projectRepo: URL, token?: string): Promise<Project[] | PostgrestError> {
+    const client = token ? getAuthenticatedSupabaseClient(token) : sb;
     // Create the project in the `projects` table
-    const { data, error } = await sb
+    const { data, error } = await client
         .from('projects')
         .insert({
             name: projectName,
@@ -71,9 +73,10 @@ async function create(userUUID: string, projectName: string, projectRepo: URL): 
 }
 
 // Edit a project
-async function edit(projectUUID: string, projectName: string, projectRepo: URL): Promise<Project[] | PostgrestError> {
+async function edit(projectUUID: string, projectName: string, projectRepo: URL, token?: string): Promise<Project[] | PostgrestError> {
+    const client = token ? getAuthenticatedSupabaseClient(token) : sb;
     // Edit the project in the `projects` table
-    const { data, error } = await sb
+    const { data, error } = await client
         .from('projects')
         .update({
             name: projectName,
@@ -91,9 +94,10 @@ async function edit(projectUUID: string, projectName: string, projectRepo: URL):
 }
 
 // Delete a project
-async function deleteP(projectUUID: string): Promise<Project[] | PostgrestError> {
+async function deleteP(projectUUID: string, token?: string): Promise<Project[] | PostgrestError> {
+    const client = token ? getAuthenticatedSupabaseClient(token) : sb;
     // Delete the project from the `projects` table
-    const { data, error } = await sb
+    const { data, error } = await client
         .from('projects')
         .delete()
         .eq('id', projectUUID)
