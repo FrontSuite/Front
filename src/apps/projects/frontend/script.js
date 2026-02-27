@@ -57,5 +57,7 @@ if (window.location.pathname === '/app/projects' || window.location.pathname ===
     loadProjects();
 } else {
     const projectUUID = window.location.pathname.split('/').pop();
-    document.getElementById('projectPage').setAttribute('src', `/apps/projects/project/?projectUUID=${projectUUID}`);
+    document.querySelector('main').style.display = 'none';
+    document.body.style.padding = '0';
+    document.getElementById('projectPage').setAttribute('src', `/app/projects/project/?projectUUID=${projectUUID}`);
 }
